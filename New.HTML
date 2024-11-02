@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>老SUZHO卫生知识PK | SUZHO Hygiene Quiz Duel</title>
+<style>
+       body {
+           font-family: Arial, sans-serif;
+           background: linear-gradient(to right, #ff7eb3, #ffccff); /* 粉色到粉红色的渐变 */
+           padding: 20px;
+           text-align: center;
+           color: #333;
+       }
+       h1 {
+           margin-bottom: 20px;
+           color: #d5006d; /* 深粉色标题 */
+       }
+       .question {
+           margin: 20px 0;
+           font-size: 1.5em;
+           background-color: rgba(255, 255, 255, 0.9);
+           border-radius: 10px;
+           padding: 20px;
+           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+       }
+       .answer {
+           margin: 10px 0;
+       }
+       button {
+           padding: 10px 20px;
+           margin: 5px;
+           cursor: pointer;
+           background-color: #ff4081; /* 粉红色按钮 */
+           color: white;
+           border: none;
+           border-radius: 5px;
+           transition: background-color 0.3s;
+       }
+       button:hover {
+           background-color: #f50057; /* 深粉红色 */
+       }
+       #result, #score {
+           margin: 20px 0;
+           font-weight: bold;
+           font-size: 1.2em;
+       }
+       #restart {
+           display: none;
+           margin-top: 20px;
+           background-color: #e74c3c; /* 红色 */
+       }
+       #restart:hover {
+           background-color: #c0392b; /* 深红色 */
+       }
+</style>
+</head>
+<body>
+<h1>老北京卫生知识PK | Beijing Hygiene Quiz Duel</h1>
+<div class="question" id="question"></div>
+<div class="answer">
+<button onclick="checkAnswer(true)">正确 | True</button>
+<button onclick="checkAnswer(false)">错误 | False</button>
+<button onclick="showHint()">提示 | Hint</button>
+</div>
+<div id="result"></div>
+<div id="score">玩家1积分：0 | Player 1 Score: 0<br>玩家2积分：0 | Player 2 Score: 0</div>
+<button id="restart" onclick="restartGame()">重新开始 | Restart</button>
+<script>
+       const questions = [
+           {
+               question: "保持卫生可以预防疾病吗？ | Can maintaining hygiene prevent diseases?",
+               answer: true,
+               hint: "保持良好的卫生习惯是预防疾病的重要措施。 | Good hygiene practices are essential in disease prevention."
+           },
+           {
+               question: "在胡同里随地吐痰是好的习惯。 | Spitting in the alley is a good habit.",
+               answer: false,
+               hint: "随地吐痰会传播病菌，应该避免。 | Spitting in public spreads germs and should be avoided."
+           },
+           {
+               question: "经常洗手可以减少感染风险。 | Washing hands regularly can reduce the risk of infection.",
+               answer: true,
+               hint: "洗手是预防感染最有效的方法之一。 | Handwashing is one of the most effective ways to prevent infections."
+           },
+           {
+               question: "食物可以在地上放一整天后再吃。 | Food can be eaten after being on the ground for a whole day.",
+               answer: false,
+               hint: "食物放置过久可能滋生细菌，应该丢弃。 | Food left out too long may grow bacteria and should be discarded."
+           },
+           {
+               question: "饮用足够的水有助于维持健康。 | Drinking enough water helps maintain health.",
+               answer: true,
+               hint: "水分对于身体各项功能非常重要。 | Hydration is crucial for all bodily functions."
+           },
+           {
+               question: "食用过期食品不会有风险。 | Eating expired food is not risky.",
+               answer: false,
+               hint: "过期食品可能导致食物中毒。 | Expired food can lead to food poisoning."
+           },
+           {
+               question: "保持环境清洁有助于预防病虫害。 | Keeping the environment clean helps prevent pests.",
+               answer: true,
+               hint: "清洁的环境可以减少病虫害滋生。 | A clean environment can reduce pest breeding."
+           },
+           {
+               question: "使用公共厕所时不需要洗手。 | It’s unnecessary to wash hands after using public restrooms.",
+               answer: false,
+               hint: "公共厕所使用后必须洗手以保持卫生。 | It's essential to wash hands after using public restrooms."
+           },
+           {
+               question: "定期清理垃圾可以防止害虫滋生。 | Regularly cleaning garbage can prevent pest breeding.",
+               answer: true,
+               hint: "垃圾是害虫的温床，定期清理至关重要。 | Garbage attracts pests; regular cleaning is essential."
+           },
+           {
+               question: "过度清洁是有益的。 | Over-cleaning is beneficial.",
+               answer: false,
+               hint: "过度清洁可能导致健康问题。 | Over-cleaning can lead to health issues."
+           }
+       ];
+       let currentQuestion = 0;
+       let score1 = 0;
+       let score2 = 0;
+       let currentPlayer = 1; // 1代表玩家1，2代表玩家2
+       function loadQuestion() {
+           document.getElementById('result').innerText = '';
+           document.getElementById('restart').style.display = 'none';
+           if (currentQuestion < questions.length) {
+               document.getElementById('question').innerText = questions[currentQuestion].question;
+           } else {
+               document.getElementById('question').innerText = "游戏结束！玩家1总积分：" + score1 + " | 玩家2总积分：" + score2 + " | Game Over! Player 1 Total Score: " + score1 + " | Player 2 Total Score: " + score2;
+               document.querySelector('.answer').style.display = 'none';
+               document.getElementById('restart').style.display = 'block';
+           }
+           document.getElementById('score').innerText = "玩家1积分：" + score1 + " | Player 1 Score: " + score1 + "<br>玩家2积分：" + score2 + " | Player 2 Score: " + score2;
+       }
+       function checkAnswer(playerAnswer) {
+           const correctAnswer = questions[currentQuestion].answer;
+           if (playerAnswer === correctAnswer) {
+               if (currentPlayer === 1) {
+                   score1 += 1;
+                   document.getElementById('result').innerText = "玩家1答对了！ | Player 1 Correct!";
+               } else {
+                   score2 += 1;
+                   document.getElementById('result').innerText = "玩家2答对了！ | Player 2 Correct!";
+               }
+           } else {
+               document.getElementById('result').innerText = currentPlayer === 1 ? "玩家1答错了！ | Player 1 Wrong!" : "玩家2答错了！ | Player 2 Wrong!";
+           }
+           currentQuestion++;
+           currentPlayer = currentPlayer === 1 ? 2 : 1; // 切换玩家
+           loadQuestion();
+       }
+       function showHint() {
+           alert(questions[currentQuestion].hint);
+       }
+       function restartGame() {
+           currentQuestion = 0;
+           score1 = 0;
+           score2 = 0;
+           currentPlayer = 1; // 重置为玩家1
+           document.querySelector('.answer').style.display = 'block';
+           loadQuestion();
+       }
+       loadQuestion();
+</script>
+</body>
+</html>
